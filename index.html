@@ -1,1 +1,41 @@
-test
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>フルスクリーンテスト</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #333;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="requestFullscreen()">フルスクリーンにする</button>
+
+  <script>
+    function requestFullscreen() {
+      const el = document.documentElement;
+
+      if (el.requestFullscreen) {
+        el.requestFullscreen();
+      } else if (el.webkitRequestFullscreen) { // Safari用
+        el.webkitRequestFullscreen();
+      } else if (el.msRequestFullscreen) { // IE11用
+        el.msRequestFullscreen();
+      }
+    }
+  </script>
+</body>
+</html>
