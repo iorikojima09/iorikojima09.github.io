@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>VJ風ビジュアライザー強化版</title>
+  <title>VJ風ビジュアライザー 強化版</title>
   <style>
     html, body {
       margin: 0;
@@ -27,7 +27,7 @@
 
     let mode = 0;
     setInterval(() => {
-      mode = (mode + 1) % 4; // 4モードを10秒ごとにループ
+      mode = (mode + 1) % 4;
     }, 10000);
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -36,7 +36,6 @@
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
-    // パーティクル
     class Particle {
       constructor() {
         this.reset();
@@ -46,7 +45,7 @@
         this.y = centerY;
         this.angle = Math.random() * Math.PI * 2;
         this.speed = Math.random() * 5 + 1;
-        this.radius = Math.random() * 3 + 2;
+        this.radius = Math.random() * 6 + 4;
         this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
       }
       update(volume) {
@@ -59,7 +58,7 @@
       }
       draw() {
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radius * 1.5, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
       }
@@ -74,61 +73,57 @@
       function animate() {
         analyser.getByteFrequencyData(dataArray);
         const avg = dataArray.reduce((a, b) => a + b) / bufferLength;
-        const amp = avg / 30; // 過剰に反応（増幅）
+        const amp = avg / 15;
 
-        ctx.fillStyle = `rgba(0, 0, 0, 0.2)`; // 残像効果
+        ctx.fillStyle = `rgba(0, 0, 0, 0.2)`;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         if (mode === 0) {
-          // 放射状ビーム
           const radius = Math.min(centerX, centerY) * 0.6;
           const angleStep = (Math.PI * 2) / bufferLength;
           for (let i = 0; i < bufferLength; i++) {
             const value = dataArray[i];
             const angle = i * angleStep;
-            const length = radius + value * 2;
+            const length = radius + value * 4;
             const x1 = centerX + Math.cos(angle) * radius;
             const y1 = centerY + Math.sin(angle) * radius;
             const x2 = centerX + Math.cos(angle) * length;
             const y2 = centerY + Math.sin(angle) * length;
 
             ctx.strokeStyle = `hsl(${i * 4 + amp * 10}, 100%, 60%)`;
-            ctx.lineWidth = 2 + amp * 0.5;
+            ctx.lineWidth = 6 + amp * 1.5;
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
             ctx.stroke();
           }
         } else if (mode === 1) {
-          // 波形スキャン
           ctx.beginPath();
           ctx.moveTo(0, centerY);
           for (let i = 0; i < bufferLength; i++) {
             const x = (i / bufferLength) * canvas.width;
-            const y = centerY + (dataArray[i] - 128) * amp * 0.5;
+            const y = centerY + (dataArray[i] - 128) * amp * 0.8;
             ctx.lineTo(x, y);
           }
           ctx.strokeStyle = `hsl(${amp * 40}, 100%, 60%)`;
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 6;
           ctx.stroke();
         } else if (mode === 2) {
-          // パーティクル爆発
           particles.forEach(p => {
             p.update(amp * 0.5);
             p.draw();
           });
         } else if (mode === 3) {
-          // 螺旋グリッド
           const lines = 60;
           for (let i = 0; i < lines; i++) {
             const angle = i * (Math.PI * 2 / lines) + performance.now() * 0.001;
             const value = dataArray[i % bufferLength];
-            const r = (value + 10) * amp;
+            const r = (value + 10) * amp * 1.5;
             const x = centerX + Math.cos(angle) * r;
             const y = centerY + Math.sin(angle) * r;
 
             ctx.beginPath();
-            ctx.arc(x, y, 4 + amp, 0, Math.PI * 2);
+            ctx.arc(x, y, 10 + amp * 1.5, 0, Math.PI * 2);
             ctx.fillStyle = `hsl(${angle * 180 / Math.PI}, 100%, 70%)`;
             ctx.fill();
           }
