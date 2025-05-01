@@ -2,12 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>iPhoneフルスクリーン（紫背景）</title>
+  <title>iPhoneフルスクリーン（ステータスバー隠す工夫）</title>
 
-  <!-- モバイル表示最適化 -->
+  <!-- モバイル最適化 + Safe Area対応 -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
-  <!-- iOS Safariで全画面表示に近づける設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -15,18 +13,23 @@
     html, body {
       margin: 0;
       padding: 0;
-      background: purple; /* ← 背景色を紫に変更 */
+      height: 100%;
+      background-color: purple;
       color: white;
       font-family: sans-serif;
-      height: 100%;
       overflow: hidden;
     }
 
     #app {
+      position: absolute;
+      top: env(safe-area-inset-top);
+      left: env(safe-area-inset-left);
+      right: env(safe-area-inset-right);
+      bottom: env(safe-area-inset-bottom);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100%;
+      padding: 0 16px;
       text-align: center;
       font-size: 24px;
     }
@@ -34,7 +37,7 @@
 </head>
 <body>
   <div id="app">
-    ホーム画面に追加すると<br>フルスクリーンになります！
+    ステータスバーの下まで<br>背景が広がっています！
   </div>
 </body>
 </html>
