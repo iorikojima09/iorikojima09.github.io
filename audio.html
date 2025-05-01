@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>audio</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      transition: background-color 0.1s;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      const source = audioCtx.createMediaStreamSource(stream);
+      source.connect(analyser);
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      function animate() {
+        analyser.getByteFrequencyData(dataArray);
+        const avg = dataArray.reduce((a, b) => a + b) / dataArray.length;
+
+        // 色を音量に応じて変える（例：HSL）
+        const hue = Math.floor((avg / 255) * 360);
+        document.body.style.backgroundColor = `hsl(${hue}, 80%, 50%)`;
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    }).catch(err => {
+      console.error('マイクの使用が拒否されました:', err);
+    });
+  </script>
+</body>
+</html>
