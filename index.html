@@ -1,73 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>フルスクリーングラデーション</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: black;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    canvas {
-      position: fixed;
-      top: env(safe-area-inset-top);
-      left: env(safe-area-inset-left);
-      right: env(safe-area-inset-right);
-      bottom: env(safe-area-inset-bottom);
-      width: calc(100% + env(safe-area-inset-left) + env(safe-area-inset-right));
-      height: calc(100% + env(safe-area-inset-top) + env(safe-area-inset-bottom));
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>テストページ</title>
 </head>
 <body>
-  <canvas id="canvas"></canvas>
-
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let width, height, gradientStep = 0;
-
-    function resize() {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-    window.addEventListener('orientationchange', resize);
-    resize();
-
-    function draw() {
-      gradientStep += 0.01;
-
-      const grad = ctx.createLinearGradient(
-        width * Math.sin(gradientStep),
-        height * Math.cos(gradientStep),
-        width * Math.cos(gradientStep * 1.2),
-        height * Math.sin(gradientStep * 0.8)
-      );
-
-      grad.addColorStop(0, `hsl(${(gradientStep * 40) % 360}, 100%, 60%)`);
-      grad.addColorStop(0.5, `hsl(${(gradientStep * 80 + 120) % 360}, 100%, 60%)`);
-      grad.addColorStop(1, `hsl(${(gradientStep * 60 + 240) % 360}, 100%, 60%)`);
-
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
-
-      requestAnimationFrame(draw);
-    }
-
-    draw();
-  </script>
+    <h1>test</h1>
 </body>
 </html>
