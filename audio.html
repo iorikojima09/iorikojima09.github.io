@@ -1,41 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <title>audio</title>
+  <meta charset="UTF-8">
+  <title>音に反応するビジュアライザー</title>
   <style>
-    body {
+    html, body {
       margin: 0;
-      height: 100vh;
-      transition: background-color 0.1s;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+      height: 100%;
+    }
+    canvas {
+      display: block;
     }
   </style>
 </head>
 <body>
+  <canvas id="visualizer"></canvas>
   <script>
+    const canvas = document.getElementById("visualizer");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Particle {
+      constructor(x, y, radius) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.baseRadius = radius;
+        this.dy = Math.random() * 0.5 + 0.2;
+      }
+      update(volume) {
+        this.radius = this.baseRadius + volume * 0.3;
+        this.y -= this.dy;
+        if (this.y < 0) this.y = canvas.height;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fill();
+      }
+    }
+
+    const particles = [];
+    for (let i = 0; i < 100; i++) {
+      particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 3 + 1));
+    }
+
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
+    analyser.fftSize = 128;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       const source = audioCtx.createMediaStreamSource(stream);
       source.connect(analyser);
 
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
       function animate() {
         analyser.getByteFrequencyData(dataArray);
-        const avg = dataArray.reduce((a, b) => a + b) / dataArray.length;
+        const avg = dataArray.reduce((a, b) => a + b) / bufferLength;
 
-        // 色を音量に応じて変える（例：HSL）
-        const hue = Math.floor((avg / 255) * 360);
-        document.body.style.backgroundColor = `hsl(${hue}, 80%, 50%)`;
+        // 背景色更新
+        const hue = (avg / 255) * 360;
+        document.body.style.backgroundColor = `hsl(${hue}, 60%, 15%)`;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // スペクトラムバー描画
+        const barWidth = canvas.width / bufferLength;
+        for (let i = 0; i < bufferLength; i++) {
+          const barHeight = dataArray[i];
+          const x = i * barWidth;
+          ctx.fillStyle = `hsl(${i * 4}, 100%, 50%)`;
+          ctx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
+        }
+
+        // パーティクル更新・描画
+        particles.forEach(p => {
+          p.update(avg / 50); // volumeで反応
+          p.draw();
+        });
 
         requestAnimationFrame(animate);
       }
 
       animate();
     }).catch(err => {
-      console.error('マイクの使用が拒否されました:', err);
+      alert("マイクの使用が許可されませんでした。");
+      console.error(err);
     });
   </script>
 </body>
