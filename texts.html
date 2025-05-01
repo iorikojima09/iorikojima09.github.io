@@ -10,13 +10,13 @@
     body {
       background-color: #f9f9f9;
       font-family: 'Noto Sans JP', sans-serif; /* フォントを Noto Sans JP に変更 */
-      padding: 20px;
+      padding: 10px;
       margin: 0;
     }
     #text {
       white-space: pre-wrap; /* 自動改行を有効にする */
       word-wrap: break-word; /* 単語の途中でも折り返し */
-      font-size: 20px;
+      font-size: 10px;
       line-height: 1.6; /* 行間を少し広げる */
     }
     #photo {
@@ -45,7 +45,7 @@
           container.innerHTML += text[i];
           i++;
         }
-        setTimeout(typeCharacter, 100); // 表示速度（ミリ秒）
+        setTimeout(typeCharacter, 50); // 表示速度（ミリ秒）
       } else {
         // 全テキスト表示後に画像を表示
         photo.style.display = 'block';
