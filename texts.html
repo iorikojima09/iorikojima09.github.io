@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字表示</title>
+  <style>
+    body {
+      background-color: #f9f9f9;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+      margin: 0;
+    }
+    #text {
+      white-space: pre-wrap; /* 自動改行を有効にする */
+      word-wrap: break-word; /* 単語の途中でも折り返し */
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="text"></div>
+
+  <script>
+    const text = "これは1文字ずつ表示されるテキストの例です。画面の端に到達すると自動的に改行されます。これは1文字ずつ表示されるテキストの例です。画面の端に到達すると自動的に改行されます。";
+    const container = document.getElementById("text");
+    let i = 0;
+
+    function typeCharacter() {
+      if (i < text.length) {
+        container.textContent += text[i];
+        i++;
+        setTimeout(typeCharacter, 100); // 表示速度（ミリ秒）
+      }
+    }
+
+    typeCharacter();
+  </script>
+</body>
+</html>
