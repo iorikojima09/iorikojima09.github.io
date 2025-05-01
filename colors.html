@@ -2,14 +2,26 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>背景色を黄色にする</title>
+    <title>背景色が変わるページ</title>
     <style>
         body {
-            background-color: yellow;
+            transition: background-color 0.2s;
         }
     </style>
 </head>
 <body>
-    <p></p>
+    <h1>背景色が0.2秒ごとに変わります</h1>
+    <script>
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        setInterval(() => {
+            document.body.style.backgroundColor = getRandomColor();
+        }, 200); // 200ミリ秒 = 0.2秒
+    </script>
 </body>
 </html>
