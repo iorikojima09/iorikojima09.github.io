@@ -2,25 +2,22 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>背景色が変わるページ</title>
+    <title>黒白点滅</title>
     <style>
         body {
-            transition: background-color 0.2s;
+            transition: background-color 0.1s;
         }
     </style>
 </head>
 <body>
+    <h1>背景が黒と白で点滅します</h1>
     <script>
-        function getRandomColor() {
-            const r = Math.floor(Math.random() * 256);
-            const g = Math.floor(Math.random() * 256);
-            const b = Math.floor(Math.random() * 256);
-            return `rgb(${r}, ${g}, ${b})`;
-        }
+        let isBlack = false;
 
         setInterval(() => {
-            document.body.style.backgroundColor = getRandomColor();
-        }, 200); // 200ミリ秒 = 0.2秒
+            document.body.style.backgroundColor = isBlack ? 'white' : 'black';
+            isBlack = !isBlack;
+        }, 100); // 100ミリ秒 = 0.1秒
     </script>
 </body>
 </html>
