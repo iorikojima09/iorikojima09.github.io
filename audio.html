@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>VJ風オーディオビジュアライザー</title>
+  <title>VJ風ビジュアライザー強化版</title>
   <style>
     html, body {
       margin: 0;
@@ -24,39 +24,48 @@
 
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    const maxRadius = Math.min(centerX, centerY) - 50;
 
-    class Particle {
-      constructor(angle, distance) {
-        this.angle = angle;
-        this.distance = distance;
-        this.radius = Math.random() * 3 + 1;
-        this.speed = Math.random() * 0.5 + 0.2;
-      }
-      update(volume) {
-        this.distance += volume * 0.01;
-        this.radius = Math.random() * 3 + volume * 0.02;
-      }
-      draw() {
-        const x = centerX + Math.cos(this.angle) * this.distance;
-        const y = centerY + Math.sin(this.angle) * this.distance;
-        ctx.beginPath();
-        ctx.arc(x, y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,0.7)`;
-        ctx.fill();
-      }
-    }
-
-    const particles = [];
-    for (let i = 0; i < 300; i++) {
-      particles.push(new Particle(Math.random() * Math.PI * 2, Math.random() * 200));
-    }
+    let mode = 0;
+    setInterval(() => {
+      mode = (mode + 1) % 4; // 4モードを10秒ごとにループ
+    }, 10000);
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const analyser = audioCtx.createAnalyser();
     analyser.fftSize = 256;
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
+
+    // パーティクル
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = centerX;
+        this.y = centerY;
+        this.angle = Math.random() * Math.PI * 2;
+        this.speed = Math.random() * 5 + 1;
+        this.radius = Math.random() * 3 + 2;
+        this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+      }
+      update(volume) {
+        this.x += Math.cos(this.angle) * this.speed * volume;
+        this.y += Math.sin(this.angle) * this.speed * volume;
+        if (
+          this.x < 0 || this.x > canvas.width ||
+          this.y < 0 || this.y > canvas.height
+        ) this.reset();
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    const particles = Array.from({ length: 200 }, () => new Particle());
 
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       const source = audioCtx.createMediaStreamSource(stream);
@@ -65,45 +74,72 @@
       function animate() {
         analyser.getByteFrequencyData(dataArray);
         const avg = dataArray.reduce((a, b) => a + b) / bufferLength;
+        const amp = avg / 30; // 過剰に反応（増幅）
 
-        // 背景グラデーションを動的に変更
-        const hue = (avg / 255) * 360;
-        ctx.fillStyle = `hsl(${hue}, 70%, 5%)`;
+        ctx.fillStyle = `rgba(0, 0, 0, 0.2)`; // 残像効果
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // 円形スペクトラムバー
-        const barCount = bufferLength;
-        const angleStep = (Math.PI * 2) / barCount;
-        for (let i = 0; i < barCount; i++) {
-          const value = dataArray[i];
-          const angle = i * angleStep;
-          const inner = maxRadius * 0.4;
-          const outer = inner + value;
-          const x1 = centerX + Math.cos(angle) * inner;
-          const y1 = centerY + Math.sin(angle) * inner;
-          const x2 = centerX + Math.cos(angle) * outer;
-          const y2 = centerY + Math.sin(angle) * outer;
+        if (mode === 0) {
+          // 放射状ビーム
+          const radius = Math.min(centerX, centerY) * 0.6;
+          const angleStep = (Math.PI * 2) / bufferLength;
+          for (let i = 0; i < bufferLength; i++) {
+            const value = dataArray[i];
+            const angle = i * angleStep;
+            const length = radius + value * 2;
+            const x1 = centerX + Math.cos(angle) * radius;
+            const y1 = centerY + Math.sin(angle) * radius;
+            const x2 = centerX + Math.cos(angle) * length;
+            const y2 = centerY + Math.sin(angle) * length;
 
-          ctx.strokeStyle = `hsl(${(i / barCount) * 360}, 100%, 60%)`;
-          ctx.lineWidth = 2;
+            ctx.strokeStyle = `hsl(${i * 4 + amp * 10}, 100%, 60%)`;
+            ctx.lineWidth = 2 + amp * 0.5;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+          }
+        } else if (mode === 1) {
+          // 波形スキャン
           ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          ctx.moveTo(0, centerY);
+          for (let i = 0; i < bufferLength; i++) {
+            const x = (i / bufferLength) * canvas.width;
+            const y = centerY + (dataArray[i] - 128) * amp * 0.5;
+            ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = `hsl(${amp * 40}, 100%, 60%)`;
+          ctx.lineWidth = 3;
           ctx.stroke();
-        }
+        } else if (mode === 2) {
+          // パーティクル爆発
+          particles.forEach(p => {
+            p.update(amp * 0.5);
+            p.draw();
+          });
+        } else if (mode === 3) {
+          // 螺旋グリッド
+          const lines = 60;
+          for (let i = 0; i < lines; i++) {
+            const angle = i * (Math.PI * 2 / lines) + performance.now() * 0.001;
+            const value = dataArray[i % bufferLength];
+            const r = (value + 10) * amp;
+            const x = centerX + Math.cos(angle) * r;
+            const y = centerY + Math.sin(angle) * r;
 
-        // パーティクル
-        particles.forEach(p => {
-          p.update(avg);
-          p.draw();
-        });
+            ctx.beginPath();
+            ctx.arc(x, y, 4 + amp, 0, Math.PI * 2);
+            ctx.fillStyle = `hsl(${angle * 180 / Math.PI}, 100%, 70%)`;
+            ctx.fill();
+          }
+        }
 
         requestAnimationFrame(animate);
       }
 
       animate();
     }).catch(err => {
-      alert("マイクの使用が許可されていません。");
+      alert("マイクへのアクセスが拒否されました。");
       console.error(err);
     });
   </script>
