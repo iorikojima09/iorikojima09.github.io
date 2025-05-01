@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>黒白点滅</title>
+    <title>black-and-white</title>
     <style>
         body {
             transition: background-color 0.1s;
@@ -10,14 +10,13 @@
     </style>
 </head>
 <body>
-    <h1>背景が黒と白で点滅します</h1>
     <script>
         let isBlack = false;
 
         setInterval(() => {
             document.body.style.backgroundColor = isBlack ? 'white' : 'black';
             isBlack = !isBlack;
-        }, 100); // 100ミリ秒 = 0.1秒
+        }, 10); // 100ミリ秒 = 0.1秒
     </script>
 </body>
 </html>
