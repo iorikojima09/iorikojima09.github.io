@@ -2,40 +2,39 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>フルスクリーンテスト</title>
+  <title>iPhoneフルスクリーン（ホーム追加用）</title>
+
+  <!-- モバイル表示最適化 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- iOS Safariで全画面表示に近づける設定 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <style>
-    body, html {
+    html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      background-color: #333;
+      background: #111;
       color: white;
+      font-family: sans-serif;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #app {
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100%;
+      text-align: center;
       font-size: 24px;
-    }
-    button {
-      font-size: 20px;
-      padding: 10px 20px;
     }
   </style>
 </head>
 <body>
-  <button onclick="requestFullscreen()">フルスクリーンにする</button>
-
-  <script>
-    function requestFullscreen() {
-      const el = document.documentElement;
-
-      if (el.requestFullscreen) {
-        el.requestFullscreen();
-      } else if (el.webkitRequestFullscreen) { // Safari用
-        el.webkitRequestFullscreen();
-      } else if (el.msRequestFullscreen) { // IE11用
-        el.msRequestFullscreen();
-      }
-    }
-  </script>
+  <div id="app">
+    ホーム画面に追加すると<br>フルスクリーンになります！
+  </div>
 </body>
 </html>
