@@ -2,9 +2,9 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>iPhoneフルスクリーン（ステータスバー隠す工夫）</title>
+  <title>グラデーション背景</title>
 
-  <!-- モバイル最適化 + Safe Area対応 -->
+  <!-- iPhone対応設定 -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,30 +14,22 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      background-color: purple;
-      color: white;
-      font-family: sans-serif;
       overflow: hidden;
     }
 
-    #app {
-      position: absolute;
-      top: env(safe-area-inset-top);
-      left: env(safe-area-inset-left);
-      right: env(safe-area-inset-right);
-      bottom: env(safe-area-inset-bottom);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0 16px;
-      text-align: center;
-      font-size: 24px;
+    body {
+      background: linear-gradient(-45deg, #ff6ec4, #7873f5, #4ade80, #facc15);
+      background-size: 600% 600%;
+      animation: gradientShift 20s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    ステータスバーの下まで<br>背景が広がっています！
-  </div>
 </body>
 </html>
