@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>colors</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
-        body {
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
             transition: background-color 0.2s;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -20,7 +28,7 @@
 
         setInterval(() => {
             document.body.style.backgroundColor = getRandomColor();
-        }, 1000); // 200ミリ秒 = 0.2秒
+        }, 1000); // 1秒ごとに色が変わる
     </script>
 </body>
 </html>
