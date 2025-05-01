@@ -2,33 +2,26 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>全画面グラデーション</title>
+  <title>ゆらめく全画面背景</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
-      background: black;
       overflow: hidden;
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+    body {
       background: linear-gradient(60deg,
         #ff6ec4, #7873f5, #4ade80, #facc15,
         #06b6d4, #f43f5e, #a78bfa, #34d399);
       background-size: 1600% 1600%;
-      animation: gradientFlow 8s ease-in-out infinite;
-      z-index: -1;
+      animation: gradientFlow 6s ease-in-out infinite;
     }
 
     @keyframes gradientFlow {
